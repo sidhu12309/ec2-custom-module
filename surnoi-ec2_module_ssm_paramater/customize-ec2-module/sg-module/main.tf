@@ -5,7 +5,7 @@ resource "aws_security_group" "this" {
   description = each.value.description
   vpc_id      = var.vpc_id
 
-  # Add all ingress rules (including dynamically appended SSH rule)
+  # Combine defined ingress with SSH rules (from allowed IPs and Jenkins SG)
   dynamic "ingress" {
     for_each = concat(
       each.value.ingress,
@@ -37,9 +37,7 @@ resource "aws_security_group" "this" {
     }
   }
 
-  # Tags
   tags = merge(var.common_tags, {
     Name = "${var.project_name}-${var.environment}-${each.key}-sg"
   })
 }
-
